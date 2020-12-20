@@ -1,0 +1,23 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="jumbotron text-center">
+    <h1>Log In</h1>
+</div>
+<div class="center-block">
+    <form method="post">
+        <input type="text" id="login_email" name="login_email" placeholder="Email" class="form-group form-control center-block" />
+        <input type="text" id="login_password" name="login_password" placeholder="Password" class="form-group form-control center-block" />
+        <input type="submit" value="Sign In" class="form-group btn btn-default center-block" />
+    </form>
+    @if ((bool)ViewData["ShowTooltip"])
+    {
+        <p>@ViewData["Tooltip"].ToString()</p>
+    }
+</div>
+
+
+

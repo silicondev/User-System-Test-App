@@ -10,19 +10,8 @@ namespace User_System_Test_App.Controllers
     {
         public ActionResult Index()
         {
-            return View();
-        }
-
-        public ActionResult About()
-        {
-            ViewBag.Message = "Your application description page.";
-
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
+            if (Session["userId"] == null)
+                return RedirectToAction("Index", "Login", new { area = "" });
 
             return View();
         }
