@@ -7,68 +7,82 @@
 <div class="jumbotron text-center">
     <h1>User Management</h1>
 </div>
-<div class="center-block">
-    <table class="table">
-        <tr>
-            <td>
-                <button>Add</button>
-                <button>Edit</button>
-                <button>Delete</button>
-                <button>Logout</button>
-            </td>
-        </tr>
-    </table>
-</div>
-<div class="center-block">
-    <table class="table table-bordered">
-        <tr>
-            <td/>
-            <td>Id</td>
-            <td>First Name</td>
-            <td>Last Name</td>
-            <td>Email</td>
-            <td>Date of Birth</td>
-            <td>Is Admin</td>
-            <td>Vehicles</td>
-            <td>Edit Vehicles</td>
-        </tr>
-        @{ 
-            var set = (DataSet)ViewData["Users"];
-            var table = set.Tables["Users"];
-            var rows = table.Rows;
-            for (int i = 0; i < rows.Count; i++)
-            {
-                var row = rows[i];
-                int id = (int)row["id"];
-                <tr>
-                    <td>
-                        <input type="radio" id="select_@id" name="select" />
-                    </td>
-                    <td>@id.ToString()</td>
-                    <td>@row["FirstName"].ToString()</td>
-                    <td>@row["LastName"].ToString()</td>
-                    <td>@row["Email"].ToString()</td>
-                    <td>@(((DateTime)row["DateOfBirth"]).ToString("d"))</td>
-                    <td>
-                        @{
-                            int raw = (int)row["IsAdmin"];
-                            bool isAdmin = raw == 1 ? true : false;
-                            if (isAdmin)
-                            {
-                                <input type="checkbox" checked disabled />
+<form action="Result" method="post">
+    <div class="center-block">
+        <table class="table">
+            <tr>
+                <td>
+                    <input type="submit" value="Add" name="add"/>
+                    <input type="submit" value="Edit" name="edit"/>
+                    <input type="submit" value="Delete" name="delete"/>
+                    <input type="submit" value="Logout" name="logout"/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="center-block">
+        <table class="table table-bordered">
+            <tr>
+                <td />
+                <td>Id</td>
+                <td>First Name</td>
+                <td>Last Name</td>
+                <td>Email</td>
+                <td>Date of Birth</td>
+                <td>Is Admin</td>
+                <td>Vehicles</td>
+                <td>Edit Vehicles</td>
+            </tr>
+            @{
+                var table = (DataTable)ViewData["Users"];
+                var rows = table.Rows;
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    var row = rows[i];
+                    int id = (int)row["id"];
+                    <tr>
+                        <td>
+                            @*@{
+                                if (i == 0)
+                                {
+                                    <input type="radio" id="select" name="select" value="@id" checked />
+                                }
+                                else
+                                {
+                                    <input type="radio" id="select" name="select" value="@id" />
+                                }
+                            }*@
+                            @Html.RadioButton("Selected", new { Id = id })
+                        </td>
+                        <td>@id.ToString()</td>
+                        <td>@row["FirstName"].ToString()</td>
+                        <td>@row["LastName"].ToString()</td>
+                        <td>@row["Email"].ToString()</td>
+                        <td>@(((DateTime)row["DateOfBirth"]).ToString("d"))</td>
+                        <td>
+                            @{
+                                int raw = (int)row["IsAdmin"];
+                                bool isAdmin = raw == 1;
+                                if (isAdmin)
+                                {
+                                    <input type="checkbox" checked disabled />
+                                }
+                                else
+                                {
+                                    <input type="checkbox" disabled />
+                                }
                             }
-                            else
+                        </td>
+                        <td>@row["Vehicles"].ToString()</td>
+                        <td>
+                            @using (Html.BeginForm("EditVehicles", "Home", new { Id = id }, FormMethod.Get))
                             {
-                                <input type="checkbox" disabled />
+                                <button>Edit</button>
                             }
-                        }
-                    </td>
-                    <td>@row["Vehicles"].ToString()</td>
-                    <td>
-                        <button>Edit</button>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                }
             }
-        }
-    </table>
-</div>
+        </table>
+    </div>
+</form>

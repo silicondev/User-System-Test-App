@@ -31,22 +31,23 @@ namespace User_System_Test_App.Models
             return cmd.ReturnValue;
         }
 
-        public DataSet RunSprocSet(string sprocName, string setName, string connectionString, params (string, object)[] args)
+        public DataTable RunSprocSet(string sprocName, string connectionString, params (string, object)[] args)
         {
             _connection = connectionString;
-            return RunSprocSet(sprocName, setName, args);
+            return RunSprocSet(sprocName, args);
         }
 
-        public DataSet RunSprocSet(string sprocName, string setName, params (string, object)[] args)
+        public DataTable RunSprocSet(string sprocName, params (string, object)[] args)
         {
             var cmd = new DatabaseCommand(sprocName, args);
             cmd.OpenConnection(_connection);
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd.Command;
-            DataSet set = new DataSet(setName);
-            da.Fill(set, setName);
+            DataSet set = new DataSet();
+            da.Fill(set, "table");
+            var table = set.Tables["table"];
             cmd.CloseConnection();
-            return set;
+            return table;
         }
 
         

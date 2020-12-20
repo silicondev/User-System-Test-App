@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -25,10 +26,13 @@ namespace User_System_Test_App.Controllers
 
             DatabaseModel database = new DatabaseModel(Properties.Resources.SqlConnectionString);
             int output = database.RunSproc("dbo.validate_user", ("email", concept.Email), ("pass", concept.Password));
+            
 
             if (output >= 0)
             {
-                Session["userId"] = output;
+                DataTable userTable = database.RunSprocSet("dbo.get_user", ("id", output));
+                UserModel user = new UserModel(userTable, output);
+                Session["user"] = user;
                 return RedirectToAction("Index", "Home", new { area = "" });
             }
 
