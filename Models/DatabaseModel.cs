@@ -24,27 +24,63 @@ namespace User_System_Test_App.Models
 
         public int RunSproc(string sprocName, params (string, object)[] args)
         {
-            SqlConnection con = new SqlConnection(_connection);
-            SqlCommand cmd = new SqlCommand();
-            cmd.Connection = con;
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.CommandText = sprocName;
+            var cmd = new DatabaseCommand(sprocName, args);
+            cmd.OpenConnection(_connection);
+            cmd.Command.ExecuteNonQuery();
+            cmd.CloseConnection();
+            return cmd.ReturnValue;
+        }
+
+        public DataSet RunSprocSet(string sprocName, string connectionString, params (string, object)[] args)
+        {
+            _connection = connectionString;
+            return RunSprocSet(sprocName, args);
+        }
+
+        public DataSet RunSprocSet(string sprocName, params (string, object)[] args)
+        {
+            return null;
+        }
+
+        
+    }
+
+    public class DatabaseCommand
+    {
+        public string CommandName => Command.CommandText;
+        private SqlConnection _con;
+        public SqlCommand Command { get; }
+        private SqlParameter _return;
+        public int ReturnValue => (int)_return?.Value;
+
+        public DatabaseCommand(string sprocName, params (string, object)[] args)
+        {
+            Command = new SqlCommand();
+            Command.CommandType = CommandType.StoredProcedure;
+            Command.CommandText = sprocName;
 
             if (args.Length != 0)
             {
                 foreach (var par in args)
                 {
                     SqlParameter spar = new SqlParameter(par.Item1, par.Item2);
-                    cmd.Parameters.Add(spar);
+                    Command.Parameters.Add(spar);
                 }
             }
-            var retParam = cmd.Parameters.Add("@ReturnVal", SqlDbType.Int);
-            retParam.Direction = ParameterDirection.ReturnValue;
+            _return = Command.Parameters.Add("@ReturnVal", SqlDbType.Int);
+            _return.Direction = ParameterDirection.ReturnValue;
+        }
 
-            con.Open();
-            cmd.ExecuteNonQuery();
-            con.Close();
-            return (int)retParam.Value;
+        public void OpenConnection(string connectionString)
+        {
+            _con = new SqlConnection(connectionString);
+            Command.Connection = _con;
+            _con.Open();
+        }
+
+        public void CloseConnection()
+        {
+            _con.Close();
         }
     }
 }
